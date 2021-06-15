@@ -11,6 +11,7 @@ public class RoadState : MonoBehaviour
     [SerializeField]
     List<eBlockState> nearRoadsState;
 
+
     // normal >> 일반적인 직선 도로. 연결부가 직선으로 2개가 있는 도로
     // cross >> 교차로 등의 꺽이는 도로가 있는 도로. 연결부의 도로가 적어도 하나 90도를 이루고 있는 도로.
     // end >> 도로의 끝 지점. 연결부가 하나밖에 없는 도로
@@ -73,6 +74,10 @@ public class RoadState : MonoBehaviour
         int roadsCount = 0;
 
         //print("nearRoadsLength: " + nearRoads.Length);
+
+        if (nearRoads.Length == 0)
+            return;
+
 
         foreach (var road in nearRoads)
         {
