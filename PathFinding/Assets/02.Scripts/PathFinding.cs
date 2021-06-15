@@ -99,17 +99,21 @@ public class PathFinding : MonoBehaviour
 
             Transform nextRoadTr = crossRoadDict[_key[count]];
             Transform hereTr = crossRoadDict[_key[count - 1]];
-            float hereToDestDiffX = destiTr.position.x - hereTr.position.x;
-            float hereToDestdiffZ = destiTr.position.z - hereTr.position.z;
+            float hereToDestDiffX = Mathf.Abs(destiTr.position.x) - Mathf.Abs(hereTr.position.x);
+            float hereToDestdiffZ = Mathf.Abs(destiTr.position.z) - Mathf.Abs(hereTr.position.z);
 
-            float hereToCrossDiffX = nextRoadTr.position.x - hereTr.position.x;
-            float hereToCrossDiffZ = nextRoadTr.position.z - hereTr.position.z;
+            float hereToNextDiffX = Mathf.Abs(nextRoadTr.position.x) - Mathf.Abs(hereTr.position.x);
+            float hereToNextDiffZ = Mathf.Abs(nextRoadTr.position.z) - Mathf.Abs(hereTr.position.z);
 
-
-            if (saveTr[count - 1].position.x == nextRoadTr.position.x)
+            // Find Road 210615
+            // 목적지의 거리가 교차점의 거리보다 멀고, 같은 방향일 때(X)
+            if (Mathf.Abs(hereToDestDiffX) > Mathf.Abs(hereToNextDiffX) && hereToDestDiffX * hereToNextDiffX > 0)
             {
 
             }
+            // 목적지의 거리가 교차점의 거리보다 멀고, 같은 방향일 때(Z)
+            // 그외(다른 방향이여도 교차점이 있는 경우)
+            // 그외(교차점이 없지만 목적지가 있는 경우)
 
         }
 
