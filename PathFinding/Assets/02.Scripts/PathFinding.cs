@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,12 +73,17 @@ public class PathFinding : MonoBehaviour
         foreach (var roadTr in gameManager.crossRoadTr)
         {
             //crossRoadDist.Add(Vector3.SqrMagnitude(roadTr.position - startTr.position));
-
-            crossRoadDict.Add(Vector3.SqrMagnitude(roadTr.position - startTr.position), roadTr);
-            // Key & Value
-            _key.Add(Vector3.SqrMagnitude(roadTr.position - startTr.position));
-            _value.Add(roadTr);
-
+            try
+            {
+                crossRoadDict.Add(Vector3.SqrMagnitude(roadTr.position - startTr.position), roadTr);
+                // Key & Value
+                _key.Add(Vector3.SqrMagnitude(roadTr.position - startTr.position));
+                _value.Add(roadTr);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Exception " + ex + " is Occure");
+            }
         }
         _key.Sort();
     }
