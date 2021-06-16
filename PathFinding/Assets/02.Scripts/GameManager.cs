@@ -5,7 +5,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    [SerializeField]
     public List<Transform> crossRoadTr;
+    [SerializeField]
+    public List<Transform> endRoadTr;
 
     Transform endTr;
     Transform startTr;

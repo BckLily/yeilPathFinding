@@ -12,6 +12,8 @@ public class RoadState : MonoBehaviour
     List<eBlockState> nearRoadsState;
 
 
+
+
     // normal >> 일반적인 직선 도로. 연결부가 직선으로 2개가 있는 도로
     // cross >> 교차로 등의 꺽이는 도로가 있는 도로. 연결부의 도로가 적어도 하나 90도를 이루고 있는 도로.
     // end >> 도로의 끝 지점. 연결부가 하나밖에 없는 도로
@@ -38,11 +40,14 @@ public class RoadState : MonoBehaviour
         Field, Road, 
     }
 
+
+    GameManager gameManager;
+
     // Start is called before the first frame update
     void Start()
     {
         roadTr = GetComponent<Transform>();
-
+        
         nearRoadsState = new List<eBlockState>();
 
         for(int i = 0; i < 4; i++)
@@ -126,6 +131,7 @@ public class RoadState : MonoBehaviour
         else if (roadsCount == 1)
         {
             _blockState = eState.endRoad;
+            GameManager.instance.endRoadTr.Add(this.transform);
         }
         else if (roadsCount == 2)
         {
@@ -142,9 +148,25 @@ public class RoadState : MonoBehaviour
         else
         {
             _blockState = eState.endRoad;
+            GameManager.instance.endRoadTr.Add(this.transform);
         }
     }
 
+    // direct (0~3)
+    public bool GetNearRoadState(int direct)
+    {
+        //     0
+        //   1   2
+        //     3
+        if (nearRoadsState[direct] == eBlockState.Road)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
 
     // Update is called once per frame

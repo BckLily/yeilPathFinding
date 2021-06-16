@@ -152,3 +152,5 @@ MonoBehaviour:
   destiTr: {fileID: 0}
   _key: []
   _value: []
+  isFind: 0
+  saveTr: []
