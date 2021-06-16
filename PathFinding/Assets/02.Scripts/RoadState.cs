@@ -56,7 +56,7 @@ public class RoadState : MonoBehaviour
         }
         /*
          *        O x + 1
-         *y - 1 O X O y + 1
+         *z - 1 O X O z + 1
          *        O x - 1
          * O >> 저장하는 위치
          * X >> 현재 위치

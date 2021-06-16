@@ -66,12 +66,9 @@ public class PathFinding : MonoBehaviour
         pos.y = (float)(startTr.position.y - 0.5);
         pos.z = startTr.position.z;
 
-        
-
 
         // 목적지 오브젝트(건물 오브젝트) 위치
-        destiTr = GameObject.FindGameObjectWithTag("END").GetComponent<Transform>();
-
+        destiTr = Physics.OverlapSphere(GameObject.FindGameObjectWithTag("END").GetComponent<Transform>().position, 0.51f, 1 << 6)[0].GetComponent<Transform>();
 
 
         //crossRoadDist = new List<float>();
@@ -140,6 +137,7 @@ public class PathFinding : MonoBehaviour
             Transform hereTr = saveTr[count];
 
             Debug.Log("check Count: " + checkCount + " count: " + count);
+            Debug.Log("hereTr: " + hereTr + " nextRoadTr: " + nextRoadTr);
 
             float hereToDestDiffX = Mathf.Abs(destiTr.position.x) - Mathf.Abs(hereTr.position.x);
             float hereToDestDiffZ = Mathf.Abs(destiTr.position.z) - Mathf.Abs(hereTr.position.z);
@@ -154,104 +152,132 @@ public class PathFinding : MonoBehaviour
             //Debug.Log("hereToDestDiffZ: " + hereToDestDiffZ + " hereToNextDiffZ" + hereToNextDiffZ);
             //Debug.Log("End Road Count: " + GameManager.instance.endRoadTr.Count);
 
-            if (Mathf.Abs(hereToDestDiffX) > Mathf.Abs(hereToNextDiffX) && hereToDestDiffX * hereToNextDiffX >= 0)
+            // 중간 조건이 망한 것 같은데 중간 조건 처리만 잘 되면 좋을 것  같다.
+            // 중간 조건을 어떻게 처리해야 할지는 감이 안오지만....
+
+            //if (Mathf.Abs(hereToDestDiffX) > Mathf.Abs(hereToNextDiffX) && hereToDestDiffX * hereToNextDiffX >= 0)
+            if (hereToDestDiffX * hereToNextDiffX >= 0)
             {
-                Debug.Log("1. Start...!");
+                Debug.Log("1. Start X...!");
                 foreach (var tr in GameManager.instance.endRoadTr)
                 {
                     //Debug.Log("tr.position.z: " + Mathf.Round(tr.position.z) + " hereTr.position.z: " + Mathf.Round(hereTr.position.z));
-                    if (tr == hereTr)
+                    if (tr.position == hereTr.position)
                     {
+                        Debug.LogError("tr == hereTr");
                         continue;
                     }
                     // Z축이 같은데, hereTr과 NextTr 사이에 endRoadTr이 없는 경우
-                    if (Mathf.Round(tr.position.z) == Mathf.Round(hereTr.position.z) && !((tr.position.x >= hereTr.position.x) && (tr.position.x <= nextRoadTr.position.x)))
+                    if (Mathf.Round(nextRoadTr.position.z) == Mathf.Round(hereTr.position.z) &&
+                        !(((Mathf.Round(tr.position.x) > Mathf.Round(hereTr.position.x)) && (Mathf.Round(tr.position.x) < Mathf.Round(nextRoadTr.position.x))) ||
+                        ((Mathf.Round(tr.position.x) < Mathf.Round(hereTr.position.x)) && (Mathf.Round(tr.position.x) > Mathf.Round(nextRoadTr.position.x)))))
                     {
+                        Debug.Log("X isAdd Set true");
                         isAdd = true;
                         break;
                     }
                     else
                     {
+                        Debug.Log("X isAdd Set false");
+                        isAdd = false;
+                        continue;
+                    }
+                }
+                Debug.Log("X isAdd: " + isAdd);
+            }
+            // 목적지의 거리가 교차점의 거리보다 멀고, 같은 방향일 때(Z)
+            //if (Mathf.Abs(hereToDestDiffZ) > Mathf.Abs(hereToNextDiffZ) && hereToDestDiffZ * hereToNextDiffZ >= 0)
+            else if (hereToDestDiffZ * hereToNextDiffZ >= 0)
+            {
+                Debug.Log("2. Start Z...!");
+                foreach (var tr in GameManager.instance.endRoadTr)
+                {
+                    //Debug.Log("tr.position.x: " + Mathf.Round(tr.position.x) + " hereTr.position.x: " + Mathf.Round(hereTr.position.x));
+                    if (tr.position == hereTr.position)
+                    {
+                        Debug.LogError("tr == hereTr");
+                        continue;
+                    }
+                    // Z축이 같은데, hereTr과 NextTr 사이에 endRoadTr이 없는 경우
+                    if (Mathf.Round(nextRoadTr.position.x) == Mathf.Round(hereTr.position.x) && 
+                        !(((Mathf.Round(tr.position.z) > Mathf.Round(hereTr.position.z)) && (Mathf.Round(tr.position.z) < Mathf.Round(nextRoadTr.position.z))) || 
+                        ((Mathf.Round(tr.position.z) < Mathf.Round(hereTr.position.z)) && (Mathf.Round(tr.position.z) > Mathf.Round(nextRoadTr.position.z)))))
+                    {
+                        Debug.Log("Z isAdd Set true");
+                        isAdd = true;
+                        break;
+                    }
+                    else
+                    {
+                        Debug.Log("Z isAdd Set false");
                         isAdd = false;
                         continue;
                     }
                 }
 
-            }
-            // 목적지의 거리가 교차점의 거리보다 멀고, 같은 방향일 때(Z)
-            if (Mathf.Abs(hereToDestDiffZ) > Mathf.Abs(hereToNextDiffZ) && hereToDestDiffZ * hereToNextDiffZ >= 0)
-            {
-                Debug.Log("2. Start...!");
-                foreach (var tr in GameManager.instance.endRoadTr)
-                {
-                    //Debug.Log("tr.position.x: " + Mathf.Round(tr.position.x) + " hereTr.position.x: " + Mathf.Round(hereTr.position.x));
-                    if (tr == hereTr)
-                    {
-                        continue;
-                    }
-                    // Z축이 같은데, hereTr과 NextTr 사이에 endRoadTr이 없는 경우
-                    if (Mathf.Round(tr.position.x) == Mathf.Round(hereTr.position.x) && !((tr.position.z >= hereTr.position.z) && (tr.position.z <= nextRoadTr.position.z)))
-                    {
-                        isAdd = true;
-                        break;
-                    }
-                    else
-                    {
-                        isAdd = false;
-                        continue;
-                    }
-                }
+                Debug.Log("Z isAdd: " + isAdd);
 
             }
             // 그외(다른 방향이여도 교차점이 있는 경우)
-            else if (Mathf.Abs(hereToDestDiffX) > Mathf.Abs(hereToNextDiffX) && hereToDestDiffX * hereToNextDiffX <= 0)
+            //else if (Mathf.Abs(hereToDestDiffX) > Mathf.Abs(hereToNextDiffX) && hereToDestDiffX * hereToNextDiffX <= 0)
+            else if (hereToDestDiffX * hereToNextDiffX <= 0)
             {
-                Debug.Log("3. Start...!");
+                Debug.Log("3. Start -X...!");
                 foreach (var tr in GameManager.instance.endRoadTr)
                 {
                     //Debug.Log("tr.position.z: " + Mathf.Round(tr.position.z) + " hereTr.position.z: " + Mathf.Round(hereTr.position.z));
-                    if (tr == hereTr)
+                    if (tr.position == hereTr.position)
                     {
+                        Debug.LogError("tr == hereTr");
                         continue;
                     }
                     // Z축이 같은데, hereTr과 NextTr 사이에 endRoadTr이 없는 경우
-                    if (Mathf.Round(tr.position.z) == Mathf.Round(hereTr.position.z) && !((tr.position.x >= hereTr.position.x) && (tr.position.x <= nextRoadTr.position.x)))
+                    if (Mathf.Round(nextRoadTr.position.z) == Mathf.Round(hereTr.position.z) && 
+                        !(((Mathf.Round(tr.position.x) > Mathf.Round(hereTr.position.x)) && (Mathf.Round(tr.position.x) < Mathf.Round(nextRoadTr.position.x)))||
+                        ((Mathf.Round(tr.position.x) < Mathf.Round(hereTr.position.x)) && (Mathf.Round(tr.position.x) > Mathf.Round(nextRoadTr.position.x)))))
                     {
+                        Debug.Log("-X isAdd Set true");
                         isAdd = true;
                         break;
                     }
                     else
                     {
+                        Debug.Log("-X isAdd Set false");
                         isAdd = false;
                         continue;
                     }
                 }
+                Debug.Log("-X isAdd: " + isAdd);
             }
-            else if (Mathf.Abs(hereToDestDiffZ) > Mathf.Abs(hereToNextDiffZ) && hereToDestDiffZ * hereToNextDiffZ <= 0)
+            //else if (Mathf.Abs(hereToDestDiffZ) > Mathf.Abs(hereToNextDiffZ) && hereToDestDiffZ * hereToNextDiffZ <= 0)
+            else if (hereToDestDiffZ * hereToNextDiffZ <= 0)
             {
-                Debug.Log("4. Start...!");
+                Debug.Log("4. Start -Z...!");
                 foreach (var tr in GameManager.instance.endRoadTr)
                 {
                     //Debug.Log("tr.position.x: " + Mathf.Round(tr.position.x) + " hereTr.position.x: " + Mathf.Round(hereTr.position.x));
-                    if (tr == hereTr)
+                    if (tr.position == hereTr.position)
                     {
-                        Debug.Log("CHECK tr == hereTr");
+                        Debug.LogError("tr == hereTr");
                         continue;
                     }
                     // Z축이 같은데, hereTr과 NextTr 사이에 endRoadTr이 없는 경우
-                    if (Mathf.Round(tr.position.x) == Mathf.Round(hereTr.position.x) && !((tr.position.z > hereTr.position.z) && (tr.position.z < nextRoadTr.position.z)))
+                    if (Mathf.Round(nextRoadTr.position.x) == Mathf.Round(hereTr.position.x) && 
+                        !(((Mathf.Round(tr.position.z) > Mathf.Round(hereTr.position.z)) && (Mathf.Round(tr.position.z) < Mathf.Round(nextRoadTr.position.z)))||
+                        ((Mathf.Round(tr.position.z) < Mathf.Round(hereTr.position.z)) && (Mathf.Round(tr.position.z) > Mathf.Round(nextRoadTr.position.z)))))
                     {
-                        Debug.Log("CHECK IF");
+                        Debug.Log("-Z isAdd Set true");
                         isAdd = true;
                         break;
                     }
                     else
                     {
-                        Debug.Log("CHECK ELSE");
+                        Debug.Log("-Z isAdd Set false");
                         isAdd = false;
                         continue;
                     }
                 }
+                Debug.Log("-Z isAdd: " + isAdd);
             }
             // 그외(교차점이 없지만 목적지가 있는 경우)
             //else if()
@@ -304,16 +330,18 @@ public class PathFinding : MonoBehaviour
 
 
             GameObject hereRoad = Physics.OverlapSphere(hereTr.position, 0.5f, 1 << 6)[0].gameObject;
-            //Debug.Log("GameObject is: " + hereRoad);
+            Debug.Log("GameObject is: " + hereRoad);
+            Debug.Log("hereTr.position: " + hereTr.position);
             Debug.Log("isAdd: " + isAdd);
+
+
+            Debug.Log("x: " + x + " goX: " + goX + " z: " + z + " goZ: " + goZ);
+            Debug.Log("x_Block_State: " + hereRoad.GetComponent<RoadState>().GetNearRoadState(goX) + " z_Block_State: " + hereRoad.GetComponent<RoadState>().GetNearRoadState(goZ));
 
             if (isAdd)
             {
                 Vector3 checkVector = nextRoadTr.position - hereTr.position;
                 Debug.Log("Vector3: " + checkVector);
-                Debug.Log("x: " + x + " goX: " + goX + " z: " + z + " goZ: " + goZ);
-                Debug.Log("x_Block_State: " + hereRoad.GetComponent<RoadState>().GetNearRoadState(goX) + " z_Block_State: " + hereRoad.GetComponent<RoadState>().GetNearRoadState(goZ));
-
                 if (Mathf.Round(checkVector.x) * Mathf.Round(checkVector.z) != 0)
                 {
                     Debug.Log("Out 1");
