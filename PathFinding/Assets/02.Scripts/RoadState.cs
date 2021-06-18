@@ -81,7 +81,10 @@ public class RoadState : MonoBehaviour
         //print("nearRoadsLength: " + nearRoads.Length);
 
         if (nearRoads.Length == 0)
-            return;
+        {
+            _blockState = eState.endRoad;
+            return; 
+        }
 
 
         foreach (var road in nearRoads)
